@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Cormei.Core\Cormei.Core.csproj" />
+    <ProjectReference Include="..\Cormei.Core\Cormei.Core.csproj" />
   </ItemGroup>
 
 	<Target Name="BuildTailwind" BeforeTargets="Build">

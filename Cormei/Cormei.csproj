@@ -73,7 +73,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Cormei.Core\Cormei.Core.csproj" />
+    <ProjectReference Include="..\Cormei.Core\Cormei.Core.csproj" />
     <ProjectReference Include="..\Cormei.Shared\Cormei.Shared.csproj" />
   </ItemGroup>
 

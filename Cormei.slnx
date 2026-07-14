@@ -1,5 +1,5 @@
 <Solution>
-  <Project Path="../Cormei.Core/Cormei.Core.csproj" />
+  <Project Path="Cormei.Core/Cormei.Core.csproj" />
   <Project Path="Cormei.Shared/Cormei.Shared.csproj" />
   <Project Path="Cormei.Web.Client/Cormei.Web.Client.csproj" />
   <Project Path="Cormei.Web/Cormei.Web.csproj" />
