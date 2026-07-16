@@ -1,0 +1,35 @@
+@inherits LayoutComponentBase
+@using Cormei.Core.Services.Login
+@inject AuthState AuthState
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<div class="flex h-screen w-full flex-col overflow-hidden bg-white font-sans text-slate-700">
+
+    <header class="relative flex h-16 shrink-0 items-center border-b border-slate-200 bg-white px-4 sm:px-6">
+        <button type="button" @onclick="Volver" title="Volver" class="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-slate-100">
+            <img src="_content/Cormei.Shared/images/ic_header_back.png" alt="Volver" class="h-5 w-5 object-contain" />
+        </button>
+
+        <img src="_content/Cormei.Shared/images/ic_header_logo.png" alt="Icon" class="absolute left-1/2 top-1/2 h-7 w-auto -translate-x-1/2 -translate-y-1/2 object-contain">
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        @Body
+    </main>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        if (!AuthState.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+
+    private async Task Volver()
+    {
+        await JS.InvokeVoidAsync("history.back");
+    }
+}

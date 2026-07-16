@@ -1,0 +1,67 @@
+@page "/empleados"
+@using Cormei.Core.Models.Trabajadores
+
+<PageTitle>Lista de empleados · CORMEI</PageTitle>
+
+<div class="mb-4 flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5">
+    <svg class="h-5 w-5 shrink-0 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+    </svg>
+    <input type="text" placeholder="Buscar empleado" @bind="textoBusqueda" @bind:event="oninput"
+           class="w-full bg-transparent text-sm text-slate-700 placeholder-slate-400 outline-none" />
+    @if (!string.IsNullOrEmpty(textoBusqueda))
+    {
+        <button type="button" @onclick="() => textoBusqueda = string.Empty" class="shrink-0 text-sm font-medium text-slate-500 hover:text-cormei">Cancelar</button>
+    }
+</div>
+
+@if (cargando)
+{
+    <p class="text-sm text-slate-400">Cargando empleados...</p>
+}
+else if (!string.IsNullOrEmpty(mensajeError))
+{
+    <div class="rounded-lg bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">@mensajeError</div>
+}
+else if (EmpleadosFiltrados.Count == 0)
+{
+    <p class="text-sm text-slate-400">No hay empleados para mostrar.</p>
+}
+else
+{
+    <div class="flex flex-col gap-4">
+        @foreach (var emp in EmpleadosFiltrados)
+        {
+            <div @onclick="() => AbrirDetalle(emp)"
+                 class="cursor-pointer rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:shadow-md">
+
+                <div class="flex items-start justify-between gap-3">
+                    <div class="flex min-w-0 flex-1 items-start gap-2.5">
+                        <svg class="mt-0.5 h-5 w-5 shrink-0 text-slate-800" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                        <span class="min-w-0 break-words font-bold uppercase leading-snug text-cormei">@emp.Nombres</span>
+                    </div>
+                    <div class="flex shrink-0 items-center gap-2">
+                        <span class="text-sm text-slate-800">Status:</span>
+                        <span class="@($"h-3 w-3 shrink-0 rounded-full {(EsActivo(emp) ? "bg-green-500" : "bg-slate-300")}")"></span>
+                    </div>
+                </div>
+
+                <div class="mt-2.5 flex min-w-0 items-center gap-2.5">
+                    <svg class="h-5 w-5 shrink-0 text-slate-800" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20 6h-4V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2H4a2 2 0 00-2 2v3a2 2 0 002 2h16a2 2 0 002-2V8a2 2 0 00-2-2zM10 4h4v2h-4V4zm10 15a1 1 0 01-1 1H5a1 1 0 01-1-1v-6.184A2.99 2.99 0 006 13h12a2.99 2.99 0 002-.184V19z" />
+                    </svg>
+                    <span class="min-w-0 break-words text-sm font-medium text-slate-800">@(string.IsNullOrEmpty(emp.TipoTrabajador) ? "Empleado" : emp.TipoTrabajador)</span>
+                </div>
+
+                <div class="mt-2.5 flex min-w-0 items-center gap-2.5">
+                    <svg class="h-5 w-5 shrink-0 text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                    <span class="min-w-0 break-all text-sm font-medium uppercase text-slate-800">@(string.IsNullOrEmpty(emp.Correo) ? "No disponible" : emp.Correo)</span>
+                </div>
+            </div>
+        }
+    </div>
+}

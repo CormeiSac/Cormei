@@ -1,17 +1,54 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@using Cormei.Core.Services.Login
+@inject AuthState AuthState
+@inject NavigationManager NavigationManager
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<div class="flex h-screen w-full overflow-hidden bg-[#f4f7fb] font-sans text-slate-700">
 
-    <main>
-   
-        <article>
+    <NavMenu MenuAbierto="menuAbierto" CerrarMenu="() => menuAbierto = false" />
+
+    @if (menuAbierto)
+    {
+        <div class="fixed inset-0 z-30 bg-black/40 lg:hidden" @onclick="() => menuAbierto = false"></div>
+    }
+
+    <div class="flex h-screen w-full flex-1 flex-col overflow-hidden">
+
+        <header class="relative flex h-16 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+            <button type="button" @onclick="() => menuAbierto = !menuAbierto" class="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-slate-100 lg:hidden">
+                <img src="_content/Cormei.Shared/images/ic_side_menu.png" alt="Abrir menú" class="h-6 w-6 object-contain" />
+            </button>
+
+            <img src="_content/Cormei.Shared/images/ic_header_logo.png" alt="Icon" class="absolute left-1/2 top-1/2 h-7 w-auto -translate-x-1/2 -translate-y-1/2 object-contain">
+
+            <div class="ml-auto flex items-center gap-2">
+                <div class="flex h-8 w-8 items-center justify-center rounded-full bg-cormei text-xs font-bold text-white">
+                    @Iniciales
+                </div>
+                <span class="hidden text-xs font-semibold text-slate-600 sm:inline">@AuthState.Usuario</span>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
             @Body
-        </article>
-    </main>
+        </main>
+    </div>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
 </div>
+
+@code {
+    private bool menuAbierto = false;
+
+    private string Iniciales =>
+        string.IsNullOrWhiteSpace(AuthState.Usuario) ? "?" : AuthState.Usuario.Substring(0, 1).ToUpper();
+
+    protected override void OnInitialized()
+    {
+        if (!AuthState.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}
