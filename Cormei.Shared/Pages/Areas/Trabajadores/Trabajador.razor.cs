@@ -40,4 +40,25 @@ public partial class Trabajador : ComponentBase
     }
 
     private bool EsActivo(TrabajadorDto emp) => string.Equals(emp.Estado, "ACTIVO", StringComparison.OrdinalIgnoreCase);
+
+      private enum EstadoVista { 
+    
+     
+        Cargando,
+        Error,
+        NoEncontrado,
+        Listo
+
+    }
+
+    private EstadoVista EstadoActual
+    {
+        get
+        {
+            if (cargando) return EstadoVista.Cargando;
+            if (!string.IsNullOrEmpty(mensajeError)) return EstadoVista.Error;
+            if (empleado is null) return EstadoVista.NoEncontrado;
+            return EstadoVista.Listo;
+        }
+    }
 }

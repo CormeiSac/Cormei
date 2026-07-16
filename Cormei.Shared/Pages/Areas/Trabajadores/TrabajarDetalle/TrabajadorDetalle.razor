@@ -9,31 +9,19 @@
 @switch (EstadoActual)
  {
     case EstadoVista.Cargando:
-    <p class="text-sm text-slate-400">Cargando ficha...</p>
+    
+        <p class="text-sm text-slate-400">Cargando ficha...</p>
         break;
     case EstadoVista.Error:
+
         <div class="rounded-lg bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">@mensajeError</div>
         break;
     case EstadoVista.NoEncontrado:
+
         <p class="text-sm text-slate-400">No se encontró el empleado.</p>
         break;
     case EstadoVista.Listo:
- }
- 
-@* @if (cargando)
-{
-    <p class="text-sm text-slate-400">Cargando ficha...</p>
-}
-else if (!string.IsNullOrEmpty(mensajeError))
-{
-    <div class="rounded-lg bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">@mensajeError</div>
-}
-else if (empleado is null)
-{
-    <p class="text-sm text-slate-400">No se encontró el empleado.</p>
-}
-else
-{ *@
+
     <div class="mx-auto flex max-w-md flex-col items-center text-center">
 
         <button type="button" @onclick="() => mostrarModalPerfil = true"class="@($"mb-2 h-5 w-5 cursor-pointer rounded-full border-2 p-0 {(EsActivo ? "border-green-500 bg-green-400" : "border-slate-400 bg-slate-300")}")"></button>
@@ -223,4 +211,6 @@ else
             </div>
         </div>
     }
+    
+    break;
 }
