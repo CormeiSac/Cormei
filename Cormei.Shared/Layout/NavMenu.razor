@@ -2,7 +2,7 @@
 @inject AuthState AuthState
 @inject NavigationManager NavigationManager
 
-<aside class="@($"fixed inset-y-0 left-0 z-40 flex w-[260px] shrink-0 flex-col overflow-hidden shadow-2xl transition-transform duration-300 lg:static lg:translate-x-0 {(MenuAbierto ? "translate-x-0" : "-translate-x-full")}")">
+<aside class="@($"fixed inset-y-0 left-0 z-40 flex w-[260px] shrink-0 flex-col overflow-hidden pt-[env(safe-area-inset-top)] shadow-2xl transition-transform duration-300 lg:static lg:translate-x-0 lg:pt-0 {(MenuAbierto ? "translate-x-0" : "-translate-x-full")}")">
 
     <img src="_content/Cormei.Shared/images/bg_side_menu.png" alt="" class="absolute inset-0 h-full w-full object-cover" />
 

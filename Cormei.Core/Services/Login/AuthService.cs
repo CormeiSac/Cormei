@@ -1,6 +1,9 @@
+using Cormei.Core.Global;
 using Cormei.Core.Interfaces.Login;
 using Cormei.Core.Models.Login;
 using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Cormei.Core.Services.Login
@@ -10,6 +13,7 @@ namespace Cormei.Core.Services.Login
         private readonly HttpClient _httpClient;
 
         string urlMaster = "https://localhost:44305";
+        // string urlMaster = "http://190.102.151.108/ApiCormei";
 
         public AuthService(HttpClient httpClient)
         {
@@ -28,7 +32,15 @@ namespace Cormei.Core.Services.Login
                 string url = $"{urlMaster}/Authentication";
                 var payload = new { Usuario = usuario, Password = password };
 
-                HttpResponseMessage response = await _httpClient.PostAsJsonAsync(url, payload);
+                /*MODIFICACION PARA CONSULTA API*/
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
+                env.FirmarPeticion(request);
+
+                string json = JsonSerializer.Serialize(payload);
+                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await _httpClient.SendAsync(request);
+
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -45,9 +57,9 @@ namespace Cormei.Core.Services.Login
             {
                 throw;
             }
-            catch
+            catch(Exception ex)
             {
-                throw new HttpRequestException("No se pudo conectar con el servidor. Intenta nuevamente.");
+                throw new HttpRequestException("No se pudo conectar con el servidor. Intenta nuevamente." +  ex.Message);
             }
         }
     }

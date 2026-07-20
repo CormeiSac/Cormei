@@ -7,6 +7,9 @@ namespace Cormei.Core.Models.Login
         [JsonPropertyName("usuario")]
         public string Usuario { get; set; } = string.Empty;
 
+        [JsonPropertyName("codTrabajador")]
+        public int CodTrabajador { get; set; }
+
         [JsonPropertyName("access_token")]
         public string AccessToken { get; set; } = string.Empty;
 

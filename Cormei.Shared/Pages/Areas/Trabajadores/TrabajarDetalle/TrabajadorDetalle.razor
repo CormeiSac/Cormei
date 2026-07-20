@@ -21,10 +21,11 @@
         <p class="text-sm text-slate-400">No se encontró el empleado.</p>
         break;
     case EstadoVista.Listo:
+        if (empleado is null) { break; }
 
     <div class="mx-auto flex max-w-md flex-col items-center text-center">
 
-        <button type="button" @onclick="() => mostrarModalPerfil = true"class="@($"mb-2 h-5 w-5 cursor-pointer rounded-full border-2 p-0 {(EsActivo ? "border-green-500 bg-green-400" : "border-slate-400 bg-slate-300")}")"></button>
+        <button type="button" @onclick="() => mostrarModalPerfil = true" class="@($"mb-2 h-5 w-5 cursor-pointer rounded-full border-2 p-0 {(EsActivo ? "border-green-500 bg-green-400" : "border-slate-400 bg-slate-300")}")"></button>
         <p class="text-xs font-bold uppercase tracking-widest text-slate-700">@(string.IsNullOrEmpty(empleado.TipoTrabajador) ? "Empleado" : empleado.TipoTrabajador)</p>
         <h2 class="mt-2 w-full break-words text-lg font-bold uppercase text-cormei">@empleado.Nombres</h2>
         <p class="mt-1 w-full break-words text-sm font-medium text-slate-700">@(string.IsNullOrEmpty(empleado.TipoDoc) ? "DNI" : empleado.TipoDoc) : @(string.IsNullOrEmpty(empleado.Documento) ? "—" : empleado.Documento)</p>

@@ -2,66 +2,74 @@
 @page "/login"
 @layout LoginLayout
 @using Microsoft.AspNetCore.Components
+@using Cormei.Core.Interfaces.Escaneo
 @using Cormei.Core.Interfaces.Login
+@using Cormei.Core.Models.Escaneo
+@using Cormei.Core.Services.Escaneo
 @using Cormei.Core.Services.Login
 @inject IAuthService AuthService
 @inject AuthState AuthState
 @inject NavigationManager NavigationManager
+@inject IQrScannerService QrScannerService
+@inject EscaneoState EscaneoState
 
 <PageTitle>Iniciar sesión · CORMEI</PageTitle>
 
-<main class="flex h-screen w-full font-sans text-slate-800 antialiased selection:bg-cormei selection:text-white">
+<!-- min-h-screen (no h-screen): si el contenido no entra (teclado abierto, pantalla chica),
+     la página crece y hace scroll nativo en vez de recortarse. Un solo scroll, a nivel <main>. -->
+<main class="flex min-h-screen w-full flex-col overflow-y-auto bg-[#F8F9FA] font-sans text-slate-800 antialiased selection:bg-cormei selection:text-white">
 
-    <div class="relative flex h-full w-full flex-col overflow-hidden bg-[#F8F9FA]">
+    <!-- Cabecera sin alto fijo (nada de vh/dvh): el tamaño lo define el contenido + padding,
+         así se adapta matemáticamente a cualquier pantalla en vez de estar calibrada a una sola.
+         pt usa calc() + env(safe-area-inset-top): nunca queda tapada por la barra de estado. -->
+    <section class="relative w-full shrink-0 bg-slate-900 px-6 pb-6 pt-[calc(1.5rem+env(safe-area-inset-top))]">
+        <img src="_content/Cormei.Shared/images/bg_login.png" alt="Industria Cormei"
+             class="absolute inset-0 h-full w-full object-cover object-center" />
+        <div class="absolute inset-0 bg-gradient-to-r from-black/45 via-black/20 to-black/5"></div>
 
-        <section class="relative z-10 w-full shrink-0 h-[26vh] min-h-[190px] sm:h-[30%] bg-slate-900">
-            <img src="_content/Cormei.Shared/images/bg_login.png" alt="Industria Cormei"
-                 class="absolute inset-0 h-full w-full object-cover object-center" />
-
+        <div class="relative z-10 flex flex-col gap-8">
             <img src="_content/Cormei.Shared/images/ic_logo_white.png" alt="Logo CORMEI"
-                 class="absolute left-6 top-6 h-10 w-auto object-contain" />
+                 class="h-auto w-[55%] max-w-[260px] object-contain" />
 
-            <div class="absolute bottom-0 left-0 w-full p-6 pb-5">
-                <p class="text-white text-[13px] leading-tight font-medium drop-shadow-md">
-                    Ingrese su nombre de usuario y contraseña<br>
-                    para acceder a su cuenta.
-                </p>
-            </div>
-        </section>
+            <p class="max-w-[320px] text-left text-sm leading-snug font-medium text-white drop-shadow-md">
+                Ingrese su nombre de usuario y contraseña para acceder a su cuenta.
+            </p>
+        </div>
+    </section>
 
-        <section class="relative flex w-full flex-grow flex-col items-center overflow-y-auto px-7 pt-7 pb-6">
-          <div class="flex w-full max-w-[420px] flex-grow flex-col">
+    <section class="flex w-full flex-1 flex-col px-6 pt-8">
+        <div class="mx-auto flex w-full max-w-[420px] flex-1 flex-col">
 
-            <EditForm Model="modelo" OnValidSubmit="ManejarLogin" class="w-full space-y-4">
+            <EditForm Model="modelo" OnValidSubmit="ManejarLogin" class="w-full space-y-5">
 
                 <div>
-                    <label class="mb-1.5 block text-sm font-bold text-black">Nombre de usuario</label>
-                    <div class="group relative">
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <label class="mb-2 block text-[15px] font-bold text-black tracking-tight">Nombre de usuario</label>
+                    <div class="relative">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                             <svg class="h-[18px] w-[18px] text-black" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
                             </svg>
                         </div>
                         <input type="text" placeholder="Nombre de usuario" @bind="modelo.Usuario" @bind:event="oninput" disabled="@estaCargando" required
-                               class="@($"w-full rounded-md border {ClaseBorde} bg-white py-2.5 pl-10 pr-4 text-[14px] text-gray-800 placeholder-gray-500 shadow-sm outline-none transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400")" />
+                               class="@($"w-full rounded-lg border-2 {ClaseBorde} bg-white py-3.5 pl-12 pr-4 text-[15px] text-gray-800 placeholder-gray-400 outline-none transition-all")" />
                     </div>
                 </div>
 
                 <div>
-                    <label class="mb-1.5 block text-sm font-bold text-black">Contraseña</label>
-                    <div class="group relative">
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <label class="mb-2 block text-[15px] font-bold text-black tracking-tight">Contraseña</label>
+                    <div class="relative">
+                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                             <svg class="h-[18px] w-[18px] text-black" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                                <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z" />
                             </svg>
                         </div>
                         <input type="@(mostrarPassword ? "text" : "password")" placeholder="Ingrese la contraseña" @bind="modelo.Password" @bind:event="oninput" disabled="@estaCargando" required
-                               class="@($"w-full rounded-md border {ClaseBorde} bg-white py-2.5 pl-10 pr-10 text-[14px] text-gray-800 placeholder-gray-500 shadow-sm outline-none transition-all duration-200 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400")" />
-                        
-                        <button type="button" @onclick="() => mostrarPassword = !mostrarPassword" disabled="@estaCargando" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition-colors hover:text-gray-600 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50">
+                               class="@($"w-full rounded-lg border-2 {ClaseBorde} bg-white py-3.5 pl-12 pr-12 text-[15px] text-gray-800 placeholder-gray-400 outline-none transition-all")" />
+
+                        <button type="button" @onclick="() => mostrarPassword = !mostrarPassword" disabled="@estaCargando" tabindex="-1" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600 focus:outline-none">
                             @if (mostrarPassword)
                             {
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                     <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" fill="none" />
                                     <line x1="3" y1="3" x2="21" y2="21" />
@@ -69,7 +77,7 @@
                             }
                             else
                             {
-                                <svg class="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
                                     <circle cx="12" cy="12" r="3" />
                                 </svg>
@@ -80,7 +88,7 @@
 
                 @if (!string.IsNullOrEmpty(mensajeError))
                 {
-                    <div @key="errorTick" class="animate-shake flex items-center gap-2 rounded-md bg-red-50 px-3 py-2 text-xs font-semibold text-red-600">
+                    <div @key="errorTick" class="animate-shake flex items-center gap-2 rounded-lg border border-red-100 bg-red-50 px-3 py-2.5 text-xs font-semibold text-red-600">
                         <svg class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0 3.75h.008v.008H12v-.008zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -90,7 +98,7 @@
 
                 <div class="pt-2">
                     <button type="submit" disabled="@estaCargando"
-                            class="relative flex w-full items-center justify-center rounded-md bg-[#be1e2d] px-6 py-2.5 text-[15px] font-bold tracking-wide text-white transition-all duration-300 hover:bg-[#a11925] focus:outline-none focus:ring-4 focus:ring-red-600/30 disabled:opacity-70">
+                            class="flex w-full items-center justify-center rounded-lg bg-[#be1e2d] py-3.5 text-[16px] font-bold text-white shadow-sm transition-colors hover:bg-[#a11925] focus:outline-none disabled:opacity-70">
                         @if (estaCargando)
                         {
                             <span class="flex items-center gap-2">
@@ -109,27 +117,34 @@
                 </div>
             </EditForm>
 
-            <div class="mt-auto pt-6 text-center">
-                <p class="text-[12px] font-medium text-gray-500">2026 CORMEI Rights reserved</p>
-            </div>
-          </div>
-        </section>
+            <div class="mt-auto flex w-full items-center justify-between gap-4 pt-8 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+                <p class="text-sm font-medium text-gray-400">2026 CORMEI Rights reserved</p>
 
-        <button type="button" title="Más opciones" class="absolute bottom-6 right-6 z-50 flex h-[48px] w-[48px] items-center justify-center rounded-full border border-gray-200 bg-white shadow-[0_4px_14px_rgba(0,0,0,0.12)] transition-transform duration-300 hover:scale-105">
-            <svg class="h-6 w-6 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                <rect x="3" y="3" width="7" height="7" rx="1.5" />
-                <rect x="5.5" y="5.5" width="2" height="2" fill="currentColor" stroke="none" rx="0.5" />
-                <rect x="14" y="3" width="7" height="7" rx="1.5" />
-                <rect x="16.5" y="5.5" width="2" height="2" fill="currentColor" stroke="none" rx="0.5" />
-                <rect x="3" y="14" width="7" height="7" rx="1.5" />
-                <rect x="5.5" y="16.5" width="2" height="2" fill="currentColor" stroke="none" rx="0.5" />
-                <rect x="14" y="14" width="2.5" height="2.5" fill="currentColor" stroke="none" rx="0.5" />
-                <rect x="18.5" y="14" width="2.5" height="2.5" fill="currentColor" stroke="none" rx="0.5" />
-                <rect x="14" y="18.5" width="2.5" height="2.5" fill="currentColor" stroke="none" rx="0.5" />
-                <rect x="18.5" y="18.5" width="2.5" height="2.5" fill="currentColor" stroke="none" rx="0.5" />
-            </svg>
-        </button>
-    </div>
+                <button type="button" title="Escanear QR" disabled="@escaneando" @onclick="EscanearQrAsync"
+                        class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white shadow-md transition-transform active:scale-95 disabled:opacity-60">
+                    @if (escaneando)
+                    {
+                        <svg class="h-6 w-6 animate-spin text-black" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v2a6 6 0 00-6 6H4z"></path>
+                        </svg>
+                    }
+                    else
+                    {
+                        <svg class="h-7 w-7 text-black" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7" rx="1" />
+                            <rect x="14" y="3" width="7" height="7" rx="1" />
+                            <rect x="3" y="14" width="7" height="7" rx="1" />
+                            <rect x="14" y="14" width="2" height="2" fill="currentColor" stroke="none" />
+                            <rect x="18" y="14" width="3" height="3" fill="currentColor" stroke="none" />
+                            <rect x="14" y="18" width="3" height="3" fill="currentColor" stroke="none" />
+                            <rect x="19" y="19" width="2" height="2" fill="currentColor" stroke="none" />
+                        </svg>
+                    }
+                </button>
+            </div>
+        </div>
+    </section>
 </main>
 
 @code {
@@ -138,10 +153,43 @@
     private bool mostrarPassword = false;
     private string mensajeError = string.Empty;
     private int errorTick = 0;
+    private bool escaneando = false;
 
     private string ClaseBorde => string.IsNullOrEmpty(mensajeError)
-        ? "border-gray-300 focus:border-gray-400 focus:ring-gray-200"
-        : "border-red-400 focus:border-red-500 focus:ring-red-100";
+        ? "border-gray-300 focus:border-slate-400"
+        : "border-red-400 focus:border-red-500";
+
+    private async Task EscanearQrAsync()
+    {
+        if (escaneando)
+        {
+            return;
+        }
+
+        escaneando = true;
+        try
+        {
+            if (!QrScannerService.EstaDisponible)
+            {
+                mensajeError = "El escaneo de QR no está disponible en este dispositivo.";
+                errorTick++;
+                return;
+            }
+
+            var textoQr = await QrScannerService.EscanearAsync();
+            if (!ResultadoEscaneoDto.TryParse(textoQr, out var resultado))
+            {
+                return;
+            }
+
+            EscaneoState.Resultado = resultado;
+            NavigationManager.NavigateTo("/escaneo/resultado");
+        }
+        finally
+        {
+            escaneando = false;
+        }
+    }
 
     private async Task ManejarLogin()
     {

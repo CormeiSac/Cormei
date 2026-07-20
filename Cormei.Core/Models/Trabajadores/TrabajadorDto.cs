@@ -13,6 +13,15 @@ namespace Cormei.Core.Models.Trabajadores
         [JsonPropertyName("nombres")]
         public string Nombres { get; set; } = string.Empty;
 
+        [JsonPropertyName("apeParterno")]
+        public string ApePaterno { get; set; } = string.Empty;
+
+        [JsonPropertyName("apeMaterno")]
+        public string ApeMaterno { get; set; } = string.Empty;
+
+        [JsonIgnore]
+        public string Apellidos => string.Join(' ', new[] { ApePaterno, ApeMaterno }.Where(a => !string.IsNullOrWhiteSpace(a)));
+
         [JsonPropertyName("tipoTrabajador")]
         public string TipoTrabajador { get; set; } = string.Empty;
 

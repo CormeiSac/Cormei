@@ -1,6 +1,9 @@
-﻿
+
 using Microsoft.Extensions.Logging;
 using Cormei.Core;
+using Cormei.Core.Interfaces.Escaneo;
+using Cormei.Services;
+using ZXing.Net.Maui.Controls;
 
 namespace Cormei
 {
@@ -11,6 +14,7 @@ namespace Cormei
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
+                .UseBarcodeReader()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -27,6 +31,7 @@ namespace Cormei
 #endif
 
             builder.Services.AddCoreServices();
+            builder.Services.AddSingleton<IQrScannerService, QrScannerService>();
 
             try
             {

@@ -57,7 +57,7 @@ public partial class Trabajador : ComponentBase
         {
             if (cargando) return EstadoVista.Cargando;
             if (!string.IsNullOrEmpty(mensajeError)) return EstadoVista.Error;
-            if (empleado is null) return EstadoVista.NoEncontrado;
+            if (EmpleadosFiltrados.Count == 0) return EstadoVista.NoEncontrado;
             return EstadoVista.Listo;
         }
     }

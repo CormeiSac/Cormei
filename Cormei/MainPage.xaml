@@ -1,15 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Cormei"
              xmlns:shared="clr-namespace:Cormei.Shared;assembly=Cormei.Shared"
+             xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
              x:Class="Cormei.MainPage"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
-    <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
-        <BlazorWebView.RootComponents>
-            <RootComponent Selector="#app" ComponentType="{x:Type shared:Routes}" />
-        </BlazorWebView.RootComponents>
-    </BlazorWebView>
+    <Grid>
+        <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
+            <BlazorWebView.RootComponents>
+                <RootComponent Selector="#app" ComponentType="{x:Type shared:Routes}" />
+            </BlazorWebView.RootComponents>
+        </BlazorWebView>
+
+        <Grid x:Name="scannerOverlay" IsVisible="False" BackgroundColor="Black">
+            <zxing:CameraBarcodeReaderView x:Name="cameraView" BarcodesDetected="OnBarcodesDetected" />
+
+            <Button Text="Cancelar"
+                    VerticalOptions="End"
+                    HorizontalOptions="Fill"
+                    Margin="24,0,24,40"
+                    BackgroundColor="#A61D1D"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="12"
+                    Clicked="OnCancelarEscaneo" />
+        </Grid>
+    </Grid>
 
 </ContentPage>
